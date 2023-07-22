@@ -1,5 +1,50 @@
 import { useState, useEffect } from 'react'
+import personService from './services/persons'
 import axios from 'axios'
+
+const SuccessNotification = ({message}) => {
+  const success = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  if (message === null) {
+    return null
+  }
+  else {
+    return (
+      <div style={success}>
+        {message}
+      </div>
+    )
+  }
+}
+
+const ErrorNotification = ({message}) => {
+  const error = {
+    color: 'red',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  if (message === null) {
+    return null
+  }
+  else {
+    return (
+      <div style={error}>
+        {message}
+      </div>
+    )
+  }
+}
 
 const Filter = ({persons, setFilteredPersons}) => {
   const [newFilter, setNewFilter] = useState('')
@@ -38,7 +83,7 @@ const Filter = ({persons, setFilteredPersons}) => {
   )
 }
 
-const PersonForm = ({persons, setPersons, filteredPersons, setFilteredPersons}) => {
+const PersonForm = ({persons, setPersons, filteredPersons, setFilteredPersons, setSuccessMessage, setErrorMessage}) => {
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
 
@@ -53,21 +98,49 @@ const PersonForm = ({persons, setPersons, filteredPersons, setFilteredPersons}) 
   const handleClick = (event) => {
     event.preventDefault()
 
-    // check if name is already in phonebook
-    if (persons.filter(person => person.name === newName).length !== 0) {
-      return (
-        alert(`${newName} is already added to the phonebook`)
-      )
-    }
+    // create a copy of the object
+    const oldPerson = persons.filter(person => person.name === newName)
 
-    const newPerson = {
-      name: newName,
-      number: newNum
+    if (oldPerson.length !== 0) {
+      // add window.confirm
+      if (window.confirm(`${newName} is already added to the phonebook, replace the older number with a new one?`)) {
+        const url = `http://localhost:3001/persons/${oldPerson[0].id}`
+
+        // change the number
+        oldPerson[0].number = newNum
+
+        // update the server, setPersons and setFilteredPersons
+        axios.put(url, oldPerson[0]).then(response => {
+          setPersons(persons.map(person => person.name === newName ? response.data : person))
+          setFilteredPersons(persons.map(person => person.name === newName ? response.data : person))
+        })
+        .catch(() => {
+          setErrorMessage(
+            `Note: ${newName} has already been removed`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
+      }
     }
-    setPersons(persons.concat(newPerson))
-    setFilteredPersons(filteredPersons.concat(newPerson)) // not [ ...persons ] due to lag in updating state
-    setNewName('')
-    setNewNum('')
+    else {
+      const newPerson = {
+        name: newName,
+        number: newNum
+      }
+
+      personService
+        .create(newPerson)
+        .then(response => {
+          setPersons(persons.concat(response))
+          setFilteredPersons(filteredPersons.concat(response)) // not [ ...persons ] due to lag in updating state
+          setNewName('')
+          setNewNum('')
+        })
+      setSuccessMessage(`Added ${newName} successfully`)
+      setTimeout(() => setSuccessMessage(null), 5000)
+    }
   }
 
 return (
@@ -85,34 +158,60 @@ return (
   )
 }
 
-const Persons = ({filteredPersons}) => {
+const DeleteButton = ({name, id, persons, setPersons, setFilteredPersons}) => {
+  const handleDelete = (event) => {
+    event.preventDefault()
+    if (window.confirm(`Delete ${name}?`)) {
+      axios
+        .delete(`http://localhost:3001/persons/${id}`)
+        .then(() => {
+          const tempPersons = persons.filter(person => person.id !== id)
+          setPersons(tempPersons)
+          setFilteredPersons(tempPersons) // this must be included for filteredPersons's state to be refreshed (since names are dependent on filteredPersons and not Persons)
+        })
+    }
+  }
   return (
-    filteredPersons.map(person => <p key={person.name}>{person.name} {person.number}</p>)
+    <button type="submit" onClick={handleDelete}>delete</button>
   )
+}
+
+const Persons = ({filteredPersons, persons, setPersons, setFilteredPersons}) => {
+  if (filteredPersons.length === 0) {
+    return (
+      persons.map(person => <p key={person.name}>{person.name} {person.number} <DeleteButton setFilteredPersons={setFilteredPersons} name={person.name} id={person.id} persons={persons} setPersons={setPersons}/></p>)
+    )
+  }
+  else {
+    return (
+      filteredPersons.map(person => <p key={person.name}>{person.name} {person.number} <DeleteButton setFilteredPersons={setFilteredPersons} name={person.name} id={person.id} persons={persons} setPersons={setPersons}/></p>)
+    )
+  }
 }
 
 const App = () => {
   // state definitions
-  const [persons, setPersons] = useState([]) 
-  const [filteredPersons, setFilteredPersons] = useState([ ...persons ])
-
+  const [persons, setPersons] = useState([])
+  const [filteredPersons, setFilteredPersons] = useState([])
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
   const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    personService
+      .getAll()
+      .then(initialPersons => setPersons(initialPersons))
   }
   useEffect(hook, [])
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <SuccessNotification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
       <Filter persons={persons} setFilteredPersons={setFilteredPersons}/>
       <h3>add a new</h3>
-      <PersonForm persons={persons} setPersons={setPersons} filteredPersons={filteredPersons} setFilteredPersons={setFilteredPersons}/>
+      <PersonForm persons={persons} setPersons={setPersons} filteredPersons={filteredPersons} setFilteredPersons={setFilteredPersons} setSuccessMessage={setSuccessMessage} setErrorMessage = {setErrorMessage}/>
       <h3>Numbers</h3>
-      <Persons filteredPersons={filteredPersons}/>
+      <Persons filteredPersons={filteredPersons} persons={persons} setPersons={setPersons} setFilteredPersons={setFilteredPersons}/>
     </div>
   )
 }
