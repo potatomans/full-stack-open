@@ -104,7 +104,7 @@ const PersonForm = ({persons, setPersons, filteredPersons, setFilteredPersons, s
     if (oldPerson.length !== 0) {
       // add window.confirm
       if (window.confirm(`${newName} is already added to the phonebook, replace the older number with a new one?`)) {
-        const url = `http://localhost:3001/persons/${oldPerson[0].id}`
+        const url = `http://localhost:3001/api/persons/${oldPerson[0].id}`
 
         // change the number
         oldPerson[0].number = newNum
@@ -137,9 +137,13 @@ const PersonForm = ({persons, setPersons, filteredPersons, setFilteredPersons, s
           setFilteredPersons(filteredPersons.concat(response)) // not [ ...persons ] due to lag in updating state
           setNewName('')
           setNewNum('')
+          setSuccessMessage(`Added ${newName} successfully`)
+          setTimeout(() => setSuccessMessage(null), 5000)
         })
-      setSuccessMessage(`Added ${newName} successfully`)
-      setTimeout(() => setSuccessMessage(null), 5000)
+        .catch(error => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => setSuccessMessage(null), 5000)
+        })
     }
   }
 
@@ -163,7 +167,7 @@ const DeleteButton = ({name, id, persons, setPersons, setFilteredPersons}) => {
     event.preventDefault()
     if (window.confirm(`Delete ${name}?`)) {
       axios
-        .delete(`http://localhost:3001/persons/${id}`)
+        .delete(`http://localhost:3001/api/persons/${id}`)
         .then(() => {
           const tempPersons = persons.filter(person => person.id !== id)
           setPersons(tempPersons)

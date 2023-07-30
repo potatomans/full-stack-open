@@ -1,0 +1,29 @@
+GET http://localhost:3003/api/blogs
+
+###
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "React patterns",
+  "author": "Michael Chan",
+  "url": "https://reactpatterns.com/",
+  "likes": 7,
+  "userId": "64c26b34d12d6c0a57055080"
+}
+
+###
+POST http://localhost:3003/api/blogs
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvdGF0b21hbnMiLCJpZCI6IjY0YzI2YjM0ZDEyZDZjMGE1NzA1NTA4MCIsImlhdCI6MTY5MDU2MzA0M30.6w799Mflkqr1uPyO0K9uvtt5bz1Hjhvm0d7RtbOPTUU
+
+{
+  "title": "Barbie",
+  "author": "Barbie's dad",
+  "url": "barbie.com",
+  "likes": "8"
+}
+
+###
+DELETE http://localhost:3003/api/blogs/64c3f1fa6304e99683140889
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvdGF0b21hbnMiLCJpZCI6IjY0YzI2YjM0ZDEyZDZjMGE1NzA1NTA4MCIsImlhdCI6MTY5MDU2MzA0M30.6w799Mflkqr1uPyO0K9uvtt5bz1Hjhvm0d7RtbOPTUU
