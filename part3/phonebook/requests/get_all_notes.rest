@@ -2,42 +2,9 @@ POST http://localhost:3001/api/persons
 content-type: application/json
 
 {
-    "name": "Manuel Ang",
-    "number": "999"
-}
-
-###
-POST http://localhost:3001/api/persons
-content-type: application/json
-
-{
-    "name": "Poh",
-    "number": "01234556"
-}
-
-###
-GET http://localhost:3001/api/persons
-
-###
-GET http://phonebook-f9az.onrender.com/
-
-###
-POST http://phonebook-f9az.onrender.com/api/persons
-content-type: application/json
-
-{
-    "name": "Manuel Ang",
-    "number": "999"
-}
-
-###
-DELETE http://localhost:3001/api/persons/64be71dfc08ae5cd3fa3c90c
-
-###
-PUT http://localhost:3001/api/persons/64be98181d6bbd37dedf0925
-content-type: application/json
-
-{
     "name": "Peter Ang",
     "number": "999"
 }
+
+###
+GET http://localhost:3001/
