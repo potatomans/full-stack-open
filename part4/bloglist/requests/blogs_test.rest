@@ -27,3 +27,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvd
 ###
 DELETE http://localhost:3003/api/blogs/64c3f1fa6304e99683140889
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvdGF0b21hbnMiLCJpZCI6IjY0YzI2YjM0ZDEyZDZjMGE1NzA1NTA4MCIsImlhdCI6MTY5MDU2MzA0M30.6w799Mflkqr1uPyO0K9uvtt5bz1Hjhvm0d7RtbOPTUU
+
+###
+POST http://localhost:3003/api/blogs/64c67c1f3f844ac6a920edc3/comments
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvdGF0b21hbnMiLCJpZCI6IjY0YzI2YjM0ZDEyZDZjMGE1NzA1NTA4MCIsImlhdCI6MTY5MTg2MDQxM30.OCbPiz_O92JMTuOl_5v0crxvpz73u-muY377lXqM_Ck
+
+{
+  "content": "hello, world!"
+}

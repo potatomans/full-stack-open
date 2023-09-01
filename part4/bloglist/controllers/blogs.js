@@ -1,12 +1,18 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (request, response) => {
-    const blogs = await Blog.find({}).populate('user')
+    const blogs = await Blog.find({}).populate('user').populate('comments')
     response.json(blogs)
   })
+
+blogsRouter.get('/:id', async (req, res) => {
+  const blog = await Blog.findById(req.params.id)
+  return res.json(blog)
+})
   
 blogsRouter.post('/', async (request, response) => {
     const body = request.body
@@ -62,6 +68,26 @@ blogsRouter.put('/:id', async (req, res) => {
 
     updatedBlog = await Blog.findByIdAndUpdate(req.params.id, newBlog, { new: true, runValidators: true })
     res.json(updatedBlog)
+})
+
+blogsRouter.post('/:id/comments', async (req, res) => {
+  // verify that user is logged in
+  const decodedToken = jwt.verify(req.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'token invalid' })
+  }
+
+  const blog = await Blog.findById(req.params.id)
+  const comment = new Comment({
+    content: req.body.content,
+    blog: blog.id
+  })
+
+  savedComment = await comment.save()
+  blog.comments = blog.comments.concat(savedComment._id)
+  await blog.save()
+
+  res.json(savedComment)
 })
 
 module.exports = blogsRouter  
