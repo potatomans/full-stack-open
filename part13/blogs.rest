@@ -1,0 +1,26 @@
+GET http://localhost:3001/api/blogs
+
+###
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imlsb3ZlZ2ciLCJpZCI6MSwiaWF0IjoxNjk0NDA4MjY5fQ.wDH7Fu_53YcShWSh5MyuuoAX2ELkqLKzF_BJGQ5EHD4
+
+{
+    "author": "George Goh",
+    "url": "harveynorman.com",
+    "title": "Why I Love Harvey Norman",
+    "likes": 50,
+    "year": 2021
+}
+
+###
+DELETE http://localhost:3001/api/blogs/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imlsb3ZlZ2ciLCJpZCI6MSwiaWF0IjoxNjk0NDA4MjY5fQ.wDH7Fu_53YcShWSh5MyuuoAX2ELkqLKzF_BJGQ5EHD4
+
+###
+PUT http://localhost:3001/api/blogs/1
+Content-Type: application/json
+
+{
+    "likes": 3
+}

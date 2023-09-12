@@ -1,0 +1,18 @@
+GET http://localhost:3001/api/users
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "name": "georgegoh",
+    "username": "presidentgg@gmail.com"
+}
+
+###
+PUT http://localhost:3001/api/users/presidentgg
+Content-Type: application/json
+
+{
+    "username": "ilovegg"
+}
