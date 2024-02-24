@@ -15,12 +15,12 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-    console.log(req.query.read)
+    console.log(req.query.read === 'true')
     let read = {
         [Op.in]: [true, false]
     }
     if (req.query.read) {
-        read = req.query.read === 'true' // take note that the two "trues" here are different
+        read = req.query.read === 'true' // take note that the two "trues" here are different. req.query.read === 'true' is not equal to true.
     }
     if (!req.query.read) {
         read = req.query.read === 'false'
