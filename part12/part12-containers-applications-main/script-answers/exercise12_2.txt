@@ -1,0 +1,12 @@
+mkdir /usr/src/app
+ls
+pwd
+cd usr
+ls
+cd src
+ls
+cd app
+ls
+touch index.js
+ls
+exit
